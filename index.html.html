@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3040 프리미엄 매칭 라운지 - 아름다운 인연을 만나다</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+        }
+        
+        body {
+            background-color: #0d0b18;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Full Screen Background Blur Slideshow Container */
+        .bg-slideshow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .bg-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .bg-slide.active {
+            opacity: 1;
+        }
+
+        /* Luxury Gradient Overlay */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(13, 11, 24, 0.45) 0%, rgba(20, 15, 38, 0.85) 60%, rgba(13, 11, 24, 0.98) 100%);
+            backdrop-filter: blur(3px);
+            z-index: -1;
+        }
+
+        /* Header / Live Stats */
+        header {
+            width: 100%;
+            max-width: 550px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, #ff4e50, #f9d423);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .live-counter {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #2ecc71;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 15px #2ecc71; }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        #online-count {
+            color: #f9d423;
+            font-weight: bold;
+        }
+
+        /* Main Core Container */
+        .main-container {
+            width: 100%;
+            max-width: 520px;
+            padding: 0 20px 40px 20px;
+            z-index: 10;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin: 20px 0 30px 0;
+        }
+
+        .hero-section h1 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero-section h1 span {
+            background: linear-gradient(to right, #ff758c, #ff7eb3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-section p {
+            font-size: 0.95rem;
+            color: #d1cbe5;
+            line-height: 1.5;
+        }
+
+        /* Information Form Card */
+        .form-card {
+            background: rgba(20, 16, 35, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 28px 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            transition: all 0.4s ease;
+        }
+
+        .form-card h2 {
+            font-size: 1.15rem;
+            color: #f9d423;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #bfaedc;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 13px 16px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #ff758c;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        select.form-control {
+            color: #fff;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/\3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 16px) center;
+        }
+
+        select.form-control option {
+            background-color: #1a1530;
+            color: #fff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(90deg, #ff5e62, #ff9966);
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 94, 98, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 94, 98, 0.6);
+        }
+
+        /* Channels Buttons Group (Initially Hidden) */
+        .channel-buttons {
+            display: none;
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .channel-title {
+            text-align: center;
+            color: #2ecc71;
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .btn-sns {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn-sns:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-line {
+            background-color: #06C755;
+        }
+
+        .btn-tg {
+            background-color: #26A5E4;
+        }
+
+        .sns-icon-text {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* 10 Real Customer Reviews Section */
+        .reviews-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px 16px;
+            overflow: hidden;
+            position: relative;
+            height: 170px;
+        }
+
+        .reviews-section h3 {
+            font-size: 0.85rem;
+            text-align: center;
+            color: #8c82a6;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .reviews-wrapper {
+            position: relative;
+            height: 110px;
+            overflow: hidden;
+        }
+
+        .review-card {
+            position: absolute;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-in-out;
+            pointer-events: none;
+        }
+
+        .review-card.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .review-card.header-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .user-meta {
+            color: #ff758c;
+        }
+
+        .stars {
+            color: #f9d423;
+        }
+
+        .review-text {
+            font-size: 0.85rem;
+            color: #e2daf0;
+            line-height: 1.4;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #554d6a;
+            border-top: 1px solid rgba(255,255,255,0.02);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-slideshow" id="slideshow">
+        <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1548142813-c348350df52b?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1534751516642-a131fed10495?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1557053910-d9eadeed1c58?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=1200&q=80')"></div>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <header>
+        <div class="logo">Corea Elite</div>
+        <div class="live-counter">
+            <span class="live-dot"></span>
+            <span>현재 실시간 접속: <span id="online-count">1,542</span>명</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="hero-section">
+            <h1>능력 있는 3040 남성을 위한<br><span>수도권 프리미엄 동네 소개팅</span></h1>
+            <p>외로움은 이제 끝, 엄격한 신원 인증과 1:1 커스텀 매칭으로 내 거주지 주변의 완벽한 반쪽을 실시간으로 만나보세요.</p>
+        </div>
+
+        <div class="form-card">
+            
+            <form id="leadForm" onsubmit="processRegistration(event)">
+                <h2>내 매칭 성향 분석 및 입장 신청</h2>
+                
+                <div class="form-group">
+                    <label>성함 (실명 보장)</label>
+                    <input type="text" id="inputName" class="form-control" placeholder="성함을 입력하세요" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>나이 (연령대 선택)</label>
+                    <select id="selectAge" class="form-control" required>
+                        <option value="" disabled selected>연령대를 선택해주세요</option>
+                        <option value="30-34">30세 ~ 34세</option>
+                        <option value="35-39">35세 ~ 39세</option>
+                        <option value="40-44">40세 ~ 44세</option>
+                        <option value="45+">45세 이상</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>거주지 주소 (동/읍/면까지)</label>
+                    <input type="text" id="inputAddress" class="form-control" placeholder="예: 서울 강남구 역삼동 / 경기 성남시" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>선호하는 이상형 스타일</label>
+                    <select id="selectType" class="form-control" required>
+                        <option value="" disabled selected>이상형을 선택해주세요</option>
+                        <option value="청순">단아하고 청순한 스타일</option>
+                        <option value="섹시">도시적이고 세련된 섹시 스타일</option>
+                        <option value="귀염">밝고 에너제틱한 귀여운 스타일</option>
+                        <option value="지적">자기관리 잘하는 커리어우먼 지적 스타일</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-btn">이상형 매칭방 즉시 확인하기</button>
+            </form>
+
+            <div class="channel-buttons" id="snsContainer">
+                <div class="channel-title">✨ 인증 완료! 실시간 소통방 입장하기</div>
+                
+                <a href="https://line.me/R/ti/g/YOUR_LINE_GROUP_LINK" target="_blank" class="btn-sns btn-line">
+                    <div class="sns-icon-text">
+                        <span>🟢 LINE 프리미엄 1:1 매칭 라운지</span>
+                    </div>
+                    <span>입장하기 &gt;</span>
+                </a>
+                
+                <a href="https://t.me/YOUR_TELEGRAM_GROUP_LINK" target="_blank" class="btn-sns btn-tg">
+                    <div class="sns-icon-text">
+                        <span>🔵 TELEGRAM 실시간 동네 매칭방</span>
+                    </div>
+                    <span>입장하기 &gt;</span>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="reviews-section">
+            <h3>실시간 회원 교제 및 성혼 후기</h3>
+            <div class="reviews-wrapper" id="reviews-box">
+                
+                <div class="review-card active">
+                    <div class="review-card header-info">
+                        <span class="user-meta">김*우 (34세 · 서울 강남구)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <div class="review-text">"가벼운 소개팅 앱에 지쳐서 등록했는데, 집 근처 청순한 대기업 대리님 소개받아서 3달째 예쁜 연애중입니다!"</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">박*준 (38세 · 경기 분당)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <div class="review-text">"라인 단톡방 관리가 되게 체계적이네요. 매니저님이 제 취향 정확하게 매칭해주셔서 주말마다 설렙니다."</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">이*민 (41세 · 서울 마포구)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <div class="review-text">"40대라 기회가 없어 반신반의했는데 텔레그램 프로필 신뢰도가 아주 높아요. 대화 잘 통하는 좋은 짝을 만났네요."</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">정*현 (36세 · 인천 송도)</span>
+                        <span class="stars">★★★★☆</span>
+                    </div>
+                    <div class="review-text">"동네 주민끼리 매칭해 주니 주말 데이트 약속 잡기 너무 편하네요. 여성 회원분들 수질이나 미모가 엄청납니다."</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">최*영 (33세 · 서울 송파구)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <div class="review-text">"처음에는 광고인 줄 알았는데 정보 기입 후 들어간 매칭방에서 이상형이었던 세련된 커리어우먼분과 만났습니다 감사해요!"</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">한*진 (39세 · 경기 일산)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <div class="review-text">"쓸데없는 소모적 감정소모 없이 확실한 오프라인 조율이 큰 장점인 듯합니다. 지인들에게도 무조건 추천중이에요."</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">오*환 (35세 · 서울 영등포구)</span>
+                        <span class="stars">★★★★☆</span>
+                    </div>
+                    <div class="review-text">"여기 매칭방 퀄리티 장난 아니네요. 대화 참여도 다들 높고, 매너 있는 여성분 매칭 받아 다음주 첫 식사합니다."</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">윤*호 (43세 · 경기 수원)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <div class="review-text">"나이가 차면서 사람 만날 곳이 뚝 끊겼는데 오직 3040 능력남 중심이라 그런지 자존감도 살고 참 괜찮은 인연 만났습니다."</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">신*재 (37세 · 서울 용산구)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <div class="review-text">"가장 좋은 건 가짜 계정이 없다는 점. 실명 베이스 유저 위주로 확실하게 서포트해주니 돈과 시간 낭비가 전혀 없습니다."</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-card header-info">
+                        <span class="user-meta">고*성 (32세 · 경기 부천)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <div class="review-text">"마음에 쏙 드는 귀여운 스타일 여성분과 실시간 소통방에서 매칭 성공! 진작 가입할 걸 그랬습니다 강추해요!"</div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© COREA ELITE LOUNGE. All Rights Reserved.</p>
+        <p style="margin-top: 5px; opacity: 0.5;">본 서비스는 19세 이상 성인 전용 프리미엄 매칭 서비스입니다.</p>
+    </footer>
+
+    <script>
+        // 1. 20 Background Images Beautiful Crossfade Slideshow
+        const slides = document.querySelectorAll('.bg-slide');
+        let currentSlide = 0;
+        
+        setInterval(() => {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }, 3500); // changes style frame every 3.5 seconds
+
+        // 2. Real-time Dynamic Fluid Online Counter Simulator
+        const countElement = document.getElementById('online-count');
+        setInterval(() => {
+            let currentCount = parseInt(countElement.innerText.replace(',', ''));
+            // Fluctuates realistically within 1450 ~ 1600 range
+            let fluctuation = Math.floor(Math.random() * 7) - 3; // -3 to +3
+            let newCount = currentCount + fluctuation;
+            if(newCount < 1450) newCount += 5;
+            if(newCount > 1600) newCount -= 5;
+            countElement.innerText = newCount.toLocaleString();
+        }, 2500);
+
+        // 3. 10 Real Reviews Sequential Fading Slider Loop
+        const reviews = document.querySelectorAll('.review-card');
+        let currentReview = 0;
+
+        setInterval(() => {
+            reviews[currentReview].classList.remove('active');
+            currentReview = (currentReview + 1) % reviews.length;
+            reviews[currentReview].classList.add('active');
+        }, 4500); // 4.5 seconds per user story
+
+        // 4. Form Lead Information capture and safe channel release reveal
+        function processRegistration(event) {
+            event.preventDefault();
+            
+            // Extract values safely
+            const name = document.getElementById('inputName').value;
+            const age = document.getElementById('selectAge').value;
+            const address = document.getElementById('inputAddress').value;
+            const type = document.getElementById('selectType').value;
+            
+            // Console log tracking for verification
+            console.log("Captured Premium Lead Details:", { name, age, address, type });
+            
+            // Smoothly hide form input elements and display official landing buttons
+            document.getElementById('leadForm').style.display = 'none';
+            document.getElementById('snsContainer').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
